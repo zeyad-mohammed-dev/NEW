@@ -1,0 +1,174 @@
+<div class="dashboard">
+
+  @if (loading) {
+    <app-loading />
+  } @else if (error) {
+    <app-empty-state [message]="error" actionLabel="Retry" (action)="loadAll()" />
+  } @else {
+
+    <!-- OOG Hero Banner -->
+    <div class="card oog-hero-card">
+      <div class="oog-hero-bg-glow"></div>
+      <div class="oog-hero-header">
+        <div class="oog-target-badge">
+          <div class="target-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
+          <div class="oog-titles">
+            <span class="oog-tag">OOG</span>
+            <h2 class="oog-main-title">Only One Goal</h2>
+            <p class="oog-subtitle">Focus on your one primary goal.</p>
+          </div>
+        </div>
+        <span class="badge badge-primary">{{ activeOOG ? 'Active' : 'Not Set' }}</span>
+      </div>
+
+      <div class="oog-content-box">
+        @if (activeOOG) {
+          <div>
+            <h1 class="oog-focus-text">{{ activeOOG.title }}</h1>
+            @if (activeOOG.description) {
+              <p class="oog-focus-desc">{{ activeOOG.description }}</p>
+            }
+          </div>
+          <a routerLink="/oog" class="oog-edit-btn" title="Edit OOG">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+            </svg>
+          </a>
+        } @else {
+          <div>
+            <h1 class="oog-focus-text">No active goal set</h1>
+            <p class="oog-focus-desc">Set your one outstanding goal to direct your daily energy.</p>
+          </div>
+          <a routerLink="/oog" class="btn btn-primary btn-sm">Set OOG</a>
+        }
+      </div>
+    </div>
+
+    <!-- Dashboard Content Grid -->
+    <div class="dashboard-grid">
+
+      <!-- Today's Habits Card -->
+      <div class="card grid-card habits-card">
+        <div class="card-header">
+          <div>
+            <a routerLink="/habits" class="section-title">
+              Today's Habits <span class="arrow">→</span>
+            </a>
+            <span class="card-subtitle">{{ todayDateFormatted }}</span>
+          </div>
+          @if (habitsCount > 0) {
+            <span class="badge badge-primary">{{ habitsComplete }}/{{ habitsCount }} Done</span>
+          }
+        </div>
+
+        @if (todayHabits.length > 0) {
+          <div class="habits-preview-list">
+            @for (habit of todayHabits; track habit._id) {
+              <div class="habit-preview-item" [class.completed]="habit.completed">
+                @if (habit.time) {
+                  <span class="habit-time-badge">{{ habit.time }}</span>
+                }
+                <span class="habit-name">{{ habit.name }}</span>
+                <button type="button" class="custom-checkbox" [class.checked]="habit.completed" (click)="toggleHabit(habit._id)" title="Toggle Completion">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <app-empty-state message="No habits tracked for today yet." />
+        }
+      </div>
+
+      <!-- Right Column Stack -->
+      <div class="dashboard-column-stack">
+        <!-- Total Stars Widget -->
+        <div class="card grid-card stars-card">
+          <div class="stars-header">
+            <span class="stars-label">Total Stars</span>
+            <div class="stars-count-box">
+              <span class="stars-num">{{ totalStars }}</span>
+              <span class="star-icon">⭐</span>
+            </div>
+          </div>
+          @if (stars.length > 0) {
+            <div class="weekly-stars-grid">
+              @for (day of stars; track day.date) {
+                <div class="day-star-item" [class.active-day]="day.isToday">
+                  <span class="day-name">{{ getDayName(day.date) }}</span>
+                  <span class="day-date">{{ getDayNum(day.date) }}</span>
+                  <span class="star-active" [class.star-outline]="!day.earned">
+                    @if (day.earned) {⭐} @else {☆}
+                    </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- 10 Days Goals Card -->
+        <div class="card grid-card goals-card">
+          <div class="card-header">
+            <a routerLink="/goals" class="section-title">
+              10 Days Goals <span class="arrow">→</span>
+            </a>
+            @if (activeCycle) {
+              <span class="badge badge-primary">Active Cycle</span>
+            }
+          </div>
+          <div class="goal-preview-content">
+            @if (activeCycle) {
+              <p class="goal-item-title">Day {{ activeCycle.day }} / {{ activeCycle.totalDays }}</p>
+              <div class="goal-progress-wrap">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="activeCycle.percentage"></div>
+                </div>
+                <span class="progress-pct">{{ activeCycle.percentage }}%</span>
+              </div>
+            } @else {
+              <app-empty-state message="No active 10-day sprint cycle." />
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Dua of the Day Card -->
+      <div class="card grid-card dua-card">
+        <div class="card-header">
+          <a routerLink="/dua-azkar" class="section-title">
+            Dua of the Day <span class="arrow">→</span>
+          </a>
+          @if (recentDua) {
+            <span class="badge badge-dua">{{ recentDua.type === 'zikr' ? 'Zikr' : 'Dua' }}</span>
+          }
+        </div>
+        <div class="dua-preview-content">
+          @if (recentDua) {
+            <h3 class="dua-name">{{ recentDua.name }}</h3>
+            @if (recentDua.content) {
+              <p class="arabic-text">{{ recentDua.content }}</p>
+            }
+          } @else {
+            <app-empty-state message="No Dua or Zikr entries added yet." />
+          }
+        </div>
+      </div>
+
+      <!-- Motivation Card -->
+      <div class="card grid-card celebration-card">
+        <div class="celebration-content">
+          <div class="party-icon">💡</div>
+          <div>
+            <h4 class="celebration-title">{{ greeting }},</h4>
+            <p class="celebration-desc">{{ quote }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

@@ -1,0 +1,217 @@
+<div class="settings-page">
+
+  @if (resetting || importing) {
+    <app-loading [message]="importing ? 'Restoring data...' : 'Resetting all data...'" />
+    <div class="settings-overlay"></div>
+  }
+
+  <div class="settings-list">
+
+    <!-- Appearance -->
+    <div class="card settings-row-card" (click)="toggleSection('appearance')">
+      <div class="row-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+      </div>
+      <div class="row-info">
+        <h3 class="row-title">Appearance</h3>
+        <p class="row-desc">Theme, Colors, Font</p>
+      </div>
+      <svg class="chevron-icon" [class.open]="openSection === 'appearance'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    @if (openSection === 'appearance') {
+      <div class="card expanded-panel">
+        <div class="panel-section">
+          <h4 class="panel-title">Floating Timer</h4>
+          <p class="panel-desc">Show a floating timer widget when a focus or break session is active.</p>
+          <div class="toggle-row">
+            <span class="toggle-label">Enable Floating Timer</span>
+            <label class="toggle-switch">
+              <input type="checkbox" [checked]="floatingTimerEnabled" (change)="toggleFloatingTimer($event)" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="panel-section">
+          <h4 class="panel-title">Theme</h4>
+          <p class="panel-desc">Dark theme is currently the only available theme.</p>
+          <span class="badge badge-primary">Dark Mode</span>
+        </div>
+      </div>
+    }
+
+    <!-- Data & Storage -->
+    <div class="card settings-row-card" (click)="toggleSection('data')">
+      <div class="row-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div class="row-info">
+        <h3 class="row-title">Data & Storage</h3>
+        <p class="row-desc">Backup, Restore, Database Status</p>
+      </div>
+      <svg class="chevron-icon" [class.open]="openSection === 'data'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    @if (openSection === 'data') {
+      <div class="card expanded-panel">
+        <!-- DB Status -->
+        <div class="panel-section">
+          <h4 class="panel-title">Database Status</h4>
+          <div class="status-row">
+            <span class="status-dot" [class.connected]="dbStatus === 'connected'" [class.disconnected]="dbStatus === 'disconnected'"></span>
+            <span class="status-text">{{ dbStatus === 'checking' ? 'Checking...' : dbStatus === 'connected' ? 'Connected' : 'Disconnected' }}</span>
+          </div>
+        </div>
+
+        <!-- Data Stats -->
+        <div class="panel-section">
+          <h4 class="panel-title">Your Data</h4>
+          @if (statsLoading) {
+            <div class="stats-loading">Loading...</div>
+          } @else if (stats) {
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.habits }}</span>
+                <span class="stat-label">Habits</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.habitLogs }}</span>
+                <span class="stat-label">Logs</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.goals }}</span>
+                <span class="stat-label">OOG Goals</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.cycles }}</span>
+                <span class="stat-label">10-Day Cycles</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.cycleTasks }}</span>
+                <span class="stat-label">Cycle Tasks</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.bigGoals }}</span>
+                <span class="stat-label">Big Goals</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.duas }}</span>
+                <span class="stat-label">Duas & Azkar</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ stats.rules }}</span>
+                <span class="stat-label">Rules</span>
+              </div>
+              <div class="stat-item stat-highlight">
+                <span class="stat-value">{{ stats.totalStars }}</span>
+                <span class="stat-label">Total Stars</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Export -->
+        <div class="panel-section">
+          <h4 class="panel-title">Backup Data</h4>
+          <p class="panel-desc">Download a full backup of all your data as a JSON file.</p>
+          <button type="button" class="btn btn-primary btn-sm" [disabled]="exporting" (click)="exportData()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {{ exporting ? 'Exporting...' : 'Download Backup' }}
+          </button>
+        </div>
+
+        <!-- Import -->
+        <div class="panel-section">
+          <h4 class="panel-title">Restore Data</h4>
+          <p class="panel-desc">Import data from a previously exported backup file. This will replace all current data.</p>
+          <div class="import-row">
+            <label class="file-label btn btn-secondary btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              {{ importFile ? importFile.name : 'Choose File' }}
+              <input type="file" accept=".json" (change)="onFileSelected($event)" hidden />
+            </label>
+            <button type="button" class="btn btn-secondary btn-sm" [disabled]="!importFile" (click)="startImport()">
+              Restore
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- About -->
+    <div class="card settings-row-card" (click)="toggleSection('about')">
+      <div class="row-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </div>
+      <div class="row-info">
+        <h3 class="row-title">About</h3>
+        <p class="row-desc">Version {{ appVersion }}, Info</p>
+      </div>
+      <svg class="chevron-icon" [class.open]="openSection === 'about'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    @if (openSection === 'about') {
+      <div class="card expanded-panel">
+        <div class="about-content">
+          <div class="about-logo">
+            <span class="logo-text">N</span>
+          </div>
+          <h3 class="about-name">NEW</h3>
+          <p class="about-tagline">N ≡ W — Personal Habit & Goal Tracker</p>
+          <div class="about-details">
+            <div class="about-row"><span class="about-key">Version</span><span class="about-val">{{ appVersion }}</span></div>
+            <div class="about-row"><span class="about-key">Frontend</span><span class="about-val">Angular 20</span></div>
+            <div class="about-row"><span class="about-key">Backend</span><span class="about-val">Node.js + Express</span></div>
+            <div class="about-row"><span class="about-key">Database</span><span class="about-val">MongoDB (Local)</span></div>
+            <div class="about-row"><span class="about-key">Desktop</span><span class="about-val">Electron</span></div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Others -->
+    <div class="card settings-row-card" (click)="toggleSection('others')">
+      <div class="row-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="row-info">
+        <h3 class="row-title">Others</h3>
+        <p class="row-desc">Language, Notifications</p>
+      </div>
+      <span class="badge badge-coming-soon">Soon</span>
+    </div>
+  </div>
+
+  <!-- Import Confirm Dialog -->
+  @if (showImportConfirm) {
+    <app-confirm-dialog
+      title="Restore Data"
+      message="This will replace ALL current data with the backup file contents. This cannot be undone. Are you sure?"
+      confirmLabel="Restore Data"
+      [danger]="true"
+      (confirm)="doImport()"
+      (cancel)="cancelImport()"
+    />
+  }
+
+  <!-- Reset Confirm Dialog -->
+  @if (showResetConfirm) {
+    <app-confirm-dialog
+      title="Reset All Data"
+      message="This will permanently delete all your habits, goals, OOGs, duas, azkar, and rules. This action cannot be undone."
+      confirmLabel="Reset Everything"
+      [danger]="true"
+      (confirm)="doReset()"
+      (cancel)="cancelReset()"
+    />
+  }
+
+  <!-- Danger Zone -->
+  <div class="danger-zone-card card">
+    <div>
+      <h4 class="danger-title">Reset All Data</h4>
+      <p class="danger-desc">Permanently delete everything and start fresh.</p>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm" (click)="showResetDialog()">Reset All Data</button>
+  </div>
+</div>

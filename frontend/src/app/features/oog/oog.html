@@ -1,0 +1,103 @@
+<div class="oog-page">
+
+  @if (showDeleteConfirm) {
+    <app-confirm-dialog title="Delete Goal" [message]="deleteMessage" confirmLabel="Delete" [danger]="true" (confirm)="doDelete()" (cancel)="cancelDelete()" />
+  }
+
+  @if (showForm) {
+    <div class="modal-overlay" (click)="cancelForm()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">{{ editing ? 'Edit OOG' : 'New OOG' }}</h3>
+          <button type="button" class="btn-icon" (click)="cancelForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="submitForm()" class="form-body">
+          <div class="field"><label class="field-label">Goal Title</label><input class="input" formControlName="title" placeholder="What is your primary focus?" /></div>
+          <div class="field"><label class="field-label">Description (optional)</label><textarea class="input" formControlName="description" rows="3" placeholder="Add extra detail or motivation..."></textarea></div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary">{{ editing ? 'Save Goal' : 'Set OOG' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loading />
+  } @else if (error) {
+    <app-empty-state [message]="error" (action)="loadAll()" />
+  } @else {
+    @if (activeOOG) {
+      <!-- OOG Glass Hero Banner -->
+      <div class="card oog-hero-banner">
+        <div class="hero-glow-ring"></div>
+        <div class="target-center-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <h1 class="oog-title-main">{{ activeOOG.title }}</h1>
+        @if (activeOOG.description) {
+          <p class="oog-desc-main">{{ activeOOG.description }}</p>
+        }
+        <div class="oog-hero-actions">
+          <button class="btn btn-secondary" (click)="openEdit()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            Edit Goal
+          </button>
+          <button class="btn btn-primary" (click)="completeOOG()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg>
+            Mark as Done
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="confirmDelete(activeOOG)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    } @else {
+      <app-empty-state message="No active OOG. Set your one outstanding goal to focus your energy." actionLabel="Set OOG" (action)="openCreate()" />
+    }
+
+    <!-- Completed Goals Section -->
+    <div class="completed-goals-section">
+      <div class="section-header"><h3 class="section-heading">Completed Goals</h3></div>
+      @if (history.length > 0) {
+        <div class="completed-goals-list">
+          @for (item of history; track item._id) {
+            <div class="card completed-goal-item">
+              <div class="item-left">
+                <div class="check-icon-circle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <h4 class="completed-title">{{ item.title }}</h4>
+                  @if (item.description) {
+                    <p class="completed-desc">{{ item.description }}</p>
+                  }
+                  @if (item.completedAt) {
+                    <span class="completed-date">Completed {{ formatDate(item.completedAt) }}</span>
+                  }
+                </div>
+              </div>
+              <div class="completed-actions">
+                <span class="badge badge-success">Completed</span>
+                <div class="item-actions">
+                  <button type="button" class="btn-icon" (click)="openEdit(item)" title="Edit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                  </button>
+                  <button type="button" class="btn-icon" (click)="confirmDelete(item)" title="Delete">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

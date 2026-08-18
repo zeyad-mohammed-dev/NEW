@@ -1,0 +1,11 @@
+.rules-page { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 2rem; }
+
+.rules-grid { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.rule-card-item { padding: 1.15rem 1.25rem; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; }
+
+.rule-item-header { display: flex; align-items: center; gap: 1rem; }
+
+.rule-title-wrap { flex: 1; min-width: 0; }
+.rule-item-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; color: var(--color-text); }
+.rule-preview-text { font-size: 0.8rem; color: var(--color-text-secondary); line-height: 1.55; margin-top: 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

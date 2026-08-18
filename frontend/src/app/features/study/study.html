@@ -1,0 +1,194 @@
+<div class="study-page">
+
+  @if (showDeleteConfirm) {
+    <app-confirm-dialog title="Delete Task" [message]="deleteMessage" confirmLabel="Delete" [danger]="true" (confirm)="doDelete()" (cancel)="cancelDelete()" />
+  }
+
+  <!-- Tab Bar -->
+  <div class="study-tab-bar">
+    <a routerLink="/study" class="tab-btn" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Pomodoro</a>
+    <a routerLink="/study/sessions" class="tab-btn" routerLinkActive="active">Session History</a>
+  </div>
+
+  @if (showTaskForm) {
+    <div class="modal-overlay" (click)="cancelForm()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">{{ editingTask ? 'Edit Task' : 'New Study Task' }}</h3>
+          <button type="button" class="btn-icon" (click)="cancelForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <form [formGroup]="taskForm" (ngSubmit)="submitTask()" class="form-body">
+          <div class="field"><label class="field-label">What to study?</label><input class="input" formControlName="name" placeholder="e.g. Chapter 5 - Data Structures" /></div>
+          <div class="field"><label class="field-label">Subject (optional)</label><input class="input" formControlName="subject" placeholder="e.g. CS, Math, Physics" /></div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary">{{ editingTask ? 'Save' : 'Add Task' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Timer Settings Modal -->
+  @if (showSettings) {
+    <div class="modal-overlay" (click)="showSettings = false">
+      <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Timer Settings</h3>
+          <button type="button" class="btn-icon" (click)="showSettings = false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <form [formGroup]="settingsForm" (ngSubmit)="saveTimerSettings()" class="form-body">
+          <div class="field"><label class="field-label">Focus Duration (min)</label><input class="input" type="number" formControlName="focusMinutes" min="1" max="120" /></div>
+          <div class="field"><label class="field-label">Break Duration (min)</label><input class="input" type="number" formControlName="breakMinutes" min="1" max="60" /></div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="showSettings = false">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loading />
+  } @else {
+    <!-- Top Bar -->
+    <div class="study-top-bar">
+      <div class="stats-pills">
+        <div class="stat-pill"><span class="pill-val">{{ pomodoro.sessionsToday() }}</span><span class="pill-label">Sessions</span></div>
+        <div class="stat-pill"><span class="pill-val">{{ pomodoro.focusMinutes() }}m</span><span class="pill-label">Focus</span></div>
+        <div class="stat-pill"><span class="pill-val">{{ pomodoro.breakMinutes() }}m</span><span class="pill-label">Break</span></div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" (click)="openTimerSettings()" title="Timer Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="btn btn-primary" (click)="openCreate()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Task
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Layout: Timer + Tasks -->
+    <div class="study-grid">
+
+      <!-- Pomodoro Timer Card -->
+      <div class="card timer-card" [class.timer-focus]="pomodoro.phase() === 'focus'" [class.timer-break]="pomodoro.phase() === 'break'" [class.timer-focus-done]="pomodoro.phase() === 'focus_done'">
+        <div class="timer-phase-label">{{ pomodoro.phaseLabel() }}</div>
+
+        @if (selectedTask && pomodoro.phase() !== 'idle' && pomodoro.phase() !== 'focus_done') {
+          <div class="timer-task-name">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            {{ selectedTask.name }}
+          </div>
+        }
+
+        <!-- Circular Timer -->
+        <div class="timer-circle-wrap">
+          <svg class="timer-svg" viewBox="0 0 200 200">
+            <circle class="timer-bg" cx="100" cy="100" r="88" fill="none" stroke-width="6" />
+            <circle class="timer-progress" cx="100" cy="100" r="88" fill="none" stroke-width="6"
+              [attr.stroke-dasharray]="pomodoro.circumference"
+              [attr.stroke-dashoffset]="pomodoro.dashOffset()"
+              stroke-linecap="round" />
+          </svg>
+          <div class="timer-display">
+            <span class="timer-digits">{{ pomodoro.displayMinutes() | number: '2.0' }}:{{ pomodoro.displaySeconds() | number: '2.0' }}</span>
+          </div>
+        </div>
+
+        <!-- Timer Controls -->
+        <div class="timer-controls">
+          @if (pomodoro.phase() === 'idle') {
+            <button class="btn btn-primary btn-lg" (click)="startFocus()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Start Focus
+            </button>
+          } @else if (pomodoro.phase() === 'focus_done') {
+            <button class="btn btn-primary btn-lg" (click)="startBreak()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Break
+            </button>
+            <button class="btn btn-ghost" (click)="pomodoro.closeAfterFocus()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              Close
+            </button>
+          } @else {
+            @if (pomodoro.isPaused()) {
+              <button class="btn btn-secondary btn-icon" (click)="resumeTimer()" title="Resume">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+            } @else {
+              <button class="btn btn-secondary btn-icon" (click)="pauseTimer()" title="Pause">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              </button>
+            }
+            <button class="btn btn-ghost" (click)="endTimer()" title="End Session">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              End
+            </button>
+          }
+        </div>
+
+        @if (pomodoro.phase() === 'idle') {
+          <p class="timer-hint">You can start focusing right away, or select a task below</p>
+        } @else if (pomodoro.phase() === 'focus_done') {
+          <p class="timer-hint">Great work! Take a break or close to start fresh.</p>
+        }
+      </div>
+
+      <!-- Tasks List -->
+      <div class="tasks-panel">
+        <div class="tasks-header">
+          <h3 class="tasks-title">Study Tasks</h3>
+          <span class="tasks-count">{{ tasks.length }}</span>
+        </div>
+
+        @if (tasks.length === 0) {
+          <div class="empty-tasks">
+            <p>No study tasks yet. Add what you need to study!</p>
+          </div>
+        } @else {
+          <div class="task-list">
+            @for (t of tasks; track t._id) {
+              <div class="task-item card" [class.selected]="selectedTask?._id === t._id" [class.completed-task]="t.completed" (click)="selectTask(t)">
+                <div class="task-left">
+                  <button type="button" class="task-checkbox" [class.checked]="t.completed" (click)="$event.stopPropagation(); toggleComplete(t)">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <div class="task-info">
+                    <span class="task-name">{{ t.name }}</span>
+                    @if (t.subject) {
+                      <span class="task-subject">{{ t.subject }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="task-right">
+                  @if (t.pomodorosCompleted > 0) {
+                    <span class="pomodoro-badge">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      {{ t.pomodorosCompleted }}
+                    </span>
+                  }
+                  <div class="item-actions" (click)="$event.stopPropagation()">
+                    <button type="button" class="btn-icon" (click)="openEdit(t)" title="Edit">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <button type="button" class="btn-icon" (click)="confirmDelete(t)" title="Delete">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

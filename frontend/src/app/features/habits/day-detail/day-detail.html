@@ -1,0 +1,28 @@
+<div class="day-detail-page">
+  <a routerLink="/habits/history" class="back-link">← Back to History</a>
+  <div class="day-header">
+    <h2>{{ formatDate() }}</h2>
+    <span class="badge" [class.badge-success]="earned" [class.badge-warning]="!earned">
+      {{ earned ? '⭐ Star Earned' : '☆ Incomplete' }}
+    </span>
+  </div>
+
+  @if (loading) {
+    <app-loading />
+  } @else if (error) {
+    <app-empty-state [message]="error" />
+  } @else {
+    <div class="card">
+      <div class="detail-list">
+        @for (habit of habits; track habit._id) {
+          <div class="detail-item" [class.completed]="habit.completed">
+            <span class="custom-checkbox" [class.checked]="habit.completed">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="detail-name">{{ habit.name }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

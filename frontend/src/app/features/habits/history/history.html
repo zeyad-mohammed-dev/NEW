@@ -1,0 +1,33 @@
+<div class="history-page">
+  <div class="page-top-bar">
+    <div class="tabs-group">
+      <a routerLink="/habits" class="tab-btn">Today</a>
+      <a routerLink="/habits/history" class="tab-btn active">History</a>
+    </div>
+  </div>
+
+  @if (loading) {
+    <app-loading />
+  } @else if (error) {
+    <app-empty-state [message]="error" actionLabel="Retry" (action)="load()" />
+  } @else if (days.length === 0) {
+    <app-empty-state message="No history yet. Complete a full day of habits to see it here." />
+  } @else {
+    <div class="history-list">
+      @for (day of days; track day.date) {
+        <a [routerLink]="['/habits/history', day.date]" class="card history-item card-interactive">
+          <div class="history-left">
+            <div class="star-display">{{ day.earned ? '⭐' : '☆' }}</div>
+            <div>
+              <h4 class="history-date">{{ formatDay(day.date) }}</h4>
+              <span class="history-stats">{{ day.completedCount }}/{{ day.totalHabits }} habits</span>
+            </div>
+          </div>
+          <span class="badge" [class.badge-success]="day.earned" [class.badge-warning]="!day.earned">
+            {{ day.earned ? 'Star Earned' : 'Incomplete' }}
+          </span>
+        </a>
+      }
+    </div>
+  }
+</div>

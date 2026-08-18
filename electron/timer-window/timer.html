@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: transparent;
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+      overflow: hidden;
+      user-select: none;
+      -webkit-app-region: drag;
+    }
+    .timer-container {
+      background: rgba(13, 10, 26, 0.92);
+      padding: 12px 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(139, 92, 246, 0.15);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      width: 200px;
+    }
+
+    /* Minimized state */
+    .timer-container.minimized {
+      width: auto;
+      padding: 8px 12px;
+      border-radius: 12px;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Header row */
+    .header { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; }
+    .header-right { display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
+    .phase { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; }
+    .phase.focus { color: #a78bfa; }
+    .phase.break { color: #4ade80; }
+    .phase.paused { color: #F59E0B; }
+
+    /* Opacity control */
+    .opacity-ctrl { display: flex; align-items: center; gap: 4px; color: #94a3b8; }
+    .opacity-ctrl svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .opacity-slider {
+      width: 45px; height: 4px; -webkit-appearance: none; appearance: none;
+      background: rgba(255, 255, 255, 0.1); border-radius: 4px; outline: none; cursor: pointer;
+    }
+    .opacity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none; width: 14px; height: 14px;
+      border-radius: 50%; background: #a78bfa; cursor: pointer;
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    }
+
+    /* Minimize button */
+    .minimize-btn {
+      width: 22px; height: 22px; border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .minimize-btn:hover { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
+    .minimize-btn svg { width: 12px; height: 12px; }
+
+    /* Time & task */
+    .time {
+      font-size: 2rem; font-weight: 800; letter-spacing: 0.02em; line-height: 1;
+    }
+    .task {
+      font-size: 0.72rem; color: #64748b; max-width: 180px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      text-align: center;
+    }
+
+    /* Minimized content */
+    .minimized-content { display: none; flex-direction: column; align-items: center; cursor: pointer; }
+    .minimized .minimized-content { display: flex; }
+    .minimized .header, .minimized .time, .minimized .task { display: none; }
+    .time-small { font-size: 1.1rem; font-weight: 800; line-height: 1; }
+    .task-small { font-size: 0.65rem; color: #64748b; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; margin-top: 2px; }
+
+    /* Controls */
+    .controls {
+      display: flex; gap: 8px; margin-top: 2px;
+      -webkit-app-region: no-drag;
+    }
+    .minimized .controls { margin-top: 0; }
+    .btn {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .btn:hover { background: rgba(139,92,246,0.2); color: #a78bfa; border-color: rgba(139,92,246,0.3); }
+    .btn svg { width: 14px; height: 14px; }
+    .btn.stop:hover { background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.3); }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="timer-container" id="timerContainer">
+      <!-- Minimized view -->
+      <div class="minimized-content" id="minimizedContent" ondblclick="toggleMinimize()">
+        <div class="time-small" id="timeSmall">25:00</div>
+        <div class="task-small" id="taskSmall"></div>
+      </div>
+
+      <!-- Header (normal view) -->
+      <div class="header" id="headerRow">
+        <div class="phase" id="phase">Ready</div>
+        <div class="header-right">
+          <div class="opacity-ctrl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20V2z"/></svg>
+            <input type="range" min="20" max="100" value="85" class="opacity-slider" id="opacitySlider" />
+          </div>
+          <button class="minimize-btn" id="minimizeBtn" title="Minimize">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Normal view -->
+      <div class="time" id="time">25:00</div>
+      <div class="task" id="task"></div>
+
+      <!-- Controls -->
+      <div class="controls" id="controlsRow">
+        <button class="btn" id="pauseBtn" title="Pause">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button class="btn stop" id="stopBtn" title="End">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const api = window.timerAPI;
+    let isMinimized = false;
+
+    // Self-sufficient countdown state
+    let endTime = null;       // Absolute timestamp (ms) when timer reaches 0
+    let isPaused = false;
+    let currentPhase = '';
+    let currentTask = '';
+    let localInterval = null;
+
+    const PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    const PLAY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    const EXPAND_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function getRemaining() {
+      if (!endTime) return 0;
+      return Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return pad(mins) + ':' + pad(secs);
+    }
+
+    function updateTimeDisplay(remaining) {
+      const timeStr = formatTime(remaining);
+      document.getElementById('time').textContent = timeStr;
+      document.getElementById('timeSmall').textContent = timeStr;
+    }
+
+    function updatePhaseDisplay() {
+      const phaseEl = document.getElementById('phase');
+      const pauseBtn = document.getElementById('pauseBtn');
+
+      if (isPaused) {
+        phaseEl.textContent = currentPhase === 'focus' ? 'Focus Paused' : 'Break Paused';
+        phaseEl.className = 'phase paused';
+        if (!isMinimized) {
+          pauseBtn.innerHTML = PLAY_SVG;
+          pauseBtn.title = 'Resume';
+          pauseBtn.onclick = togglePauseResume;
+        }
+      } else if (currentPhase === 'focus') {
+        phaseEl.textContent = 'Focus Time';
+        phaseEl.className = 'phase focus';
+        if (!isMinimized) {
+          pauseBtn.innerHTML = PAUSE_SVG;
+          pauseBtn.title = 'Pause';
+          pauseBtn.onclick = togglePauseResume;
+        }
+      } else if (currentPhase === 'break') {
+        phaseEl.textContent = 'Break Time';
+        phaseEl.className = 'phase break';
+        if (!isMinimized) {
+          pauseBtn.innerHTML = PAUSE_SVG;
+          pauseBtn.title = 'Pause';
+          pauseBtn.onclick = togglePauseResume;
+        }
+      }
+    }
+
+    function startLocalCountdown() {
+      stopLocalCountdown();
+      if (!endTime || isPaused) return;
+      // Update immediately
+      updateTimeDisplay(getRemaining());
+      localInterval = setInterval(() => {
+        const rem = getRemaining();
+        updateTimeDisplay(rem);
+        if (rem <= 0) {
+          stopLocalCountdown();
+        }
+      }, 250); // 250ms for smooth display, calculates from absolute time so always accurate
+    }
+
+    function stopLocalCountdown() {
+      if (localInterval) {
+        clearInterval(localInterval);
+        localInterval = null;
+      }
+    }
+
+    function toggleMinimize() {
+      isMinimized = !isMinimized;
+      const container = document.getElementById('timerContainer');
+      const pauseBtn = document.getElementById('pauseBtn');
+      if (isMinimized) {
+        container.classList.add('minimized');
+        pauseBtn.innerHTML = EXPAND_SVG;
+        pauseBtn.title = 'Expand';
+        pauseBtn.onclick = toggleMinimize;
+      } else {
+        container.classList.remove('minimized');
+        pauseBtn.innerHTML = isPaused ? PLAY_SVG : PAUSE_SVG;
+        pauseBtn.title = isPaused ? 'Resume' : 'Pause';
+        pauseBtn.onclick = togglePauseResume;
+      }
+      resizeWindow();
+    }
+
+    function resizeWindow() {
+      if (api) api.sendAction('resize-' + (isMinimized ? 'min' : 'normal'));
+    }
+
+    /** Called when receiving state from main window via IPC */
+    function updateUI(state) {
+      const prevPaused = isPaused;
+      const prevEndTime = endTime;
+
+      currentPhase = state.phase;
+      isPaused = !!state.isPaused;
+      currentTask = state.taskName || '';
+
+      document.getElementById('task').textContent = currentTask;
+      document.getElementById('taskSmall').textContent = currentTask;
+
+      // Update endTime if provided (new timer start or resume)
+      if (state.endTime && state.endTime !== prevEndTime) {
+        endTime = state.endTime;
+      }
+
+      updatePhaseDisplay();
+
+      // Start/stop local countdown based on pause state
+      if (!isPaused && endTime) {
+        startLocalCountdown();
+      } else {
+        stopLocalCountdown();
+        // Show the remaining from the message when paused
+        if (state.remainingSeconds !== undefined) {
+          updateTimeDisplay(state.remainingSeconds);
+        }
+      }
+    }
+
+    function togglePauseResume() {
+      if (api) api.sendAction('pause-resume');
+    }
+
+    if (api) {
+      api.onUpdateState(updateUI);
+
+      // Use onclick only (no addEventListener) to avoid double-fire when button role changes
+      document.getElementById('pauseBtn').onclick = togglePauseResume;
+      document.getElementById('stopBtn').onclick = function() {
+        if (api) api.sendAction('end');
+      };
+      document.getElementById('minimizeBtn').onclick = function() {
+        toggleMinimize();
+      };
+
+      // Opacity slider
+      const slider = document.getElementById('opacitySlider');
+      slider.addEventListener('input', () => {
+        const opacity = slider.value / 100;
+        document.getElementById('timerContainer').style.opacity = opacity;
+      });
+    }
+  </script>
+</body>
+</html>

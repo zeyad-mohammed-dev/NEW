@@ -1,0 +1,49 @@
+# ==================== Dependencies ====================
+node_modules/
+
+# ==================== Build Output ====================
+dist/
+frontend/dist/
+
+# ==================== Electron Builder Output ====================
+release/
+out/
+
+# ==================== Environment Variables ====================
+.env
+.env.local
+.env.*.local
+
+# ==================== IDE & Editor ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==================== OS Files ====================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==================== Logs ====================
+*.log
+npm-debug.log*
+
+# ==================== Electron Builder ====================
+*.blockmap
+*.exe
+*.dmg
+*.AppImage
+*.deb
+
+# ==================== Angular ====================
+.angular/
+
+# ==================== Coverage / Test ====================
+coverage/
+
+# ==================== Misc ====================
+*.zip
+*.tar.gz
+*.rar

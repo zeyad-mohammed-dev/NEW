@@ -1,0 +1,54 @@
+<div class="sessions-page">
+  <div class="page-top-bar">
+    <div class="tabs-group">
+      <a routerLink="/study" class="tab-btn">Pomodoro</a>
+      <a routerLink="/study/sessions" class="tab-btn active">Session History</a>
+    </div>
+    @if (!loading && days.length > 0) {
+      <div class="sessions-summary-pills">
+        <div class="stat-pill">
+          <span class="pill-val">{{ totalSessions }}</span>
+          <span class="pill-label">Total Sessions</span>
+        </div>
+        <div class="stat-pill">
+          <span class="pill-val">{{ formatHours(totalMinutes) }}</span>
+          <span class="pill-label">Focus Time</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loading />
+  } @else if (error) {
+    <app-empty-state [message]="error" actionLabel="Retry" (action)="load()" />
+  } @else if (days.length === 0) {
+    <app-empty-state message="No focus sessions recorded yet. Complete a pomodoro to see your history here." />
+  } @else {
+    <div class="sessions-list">
+      @for (day of days; track day.date) {
+        <div class="card session-day-item">
+          <div class="session-day-left">
+            <div class="session-day-icon">
+              @if (day.sessions > 0) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--color-primary-light)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--color-text-muted)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              }
+            </div>
+            <div>
+              <h4 class="session-day-date">{{ formatDay(day.date) }}</h4>
+              <span class="session-day-stats">{{ formatHours(day.totalMinutes) }} focused</span>
+            </div>
+          </div>
+          <div class="session-day-right">
+            <div class="session-bar-wrap">
+              <div class="session-bar" [style.width.%]="(day.sessions / getMaxSessions()) * 100"></div>
+            </div>
+            <span class="session-count-badge" [class.has-sessions]="day.sessions > 0">{{ day.sessions }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,108 @@
+.floating-timer {
+  position: fixed; z-index: 9998; padding: 1rem 1.15rem;
+  background: rgba(13, 10, 26, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 92, 246, 0.3); border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(139, 92, 246, 0.15);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  user-select: none; transition: box-shadow 0.3s ease, border-color 0.3s ease, width 0.3s ease, padding 0.3s ease, border-radius 0.3s ease;
+  width: 200px;
+}
+
+/* Minimized state */
+.floating-timer.floating-minimized {
+  width: auto;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-md);
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.float-drag-handle {
+  cursor: grab;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.floating-minimized .float-drag-handle {
+  flex: 1;
+}
+
+.float-drag-handle:active { cursor: grabbing; }
+
+/* Minimized content */
+.float-minimized-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.float-time-small {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.float-task-small {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 0.15rem;
+}
+
+.float-header { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 0.5rem; }
+.float-header-right { display: flex; align-items: center; gap: 0.4rem; }
+
+.float-phase { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); }
+.float-focus { color: var(--color-primary-light); }
+.float-break { color: #4ade80; }
+.float-paused { color: #F59E0B; }
+
+.float-opacity-ctrl { display: flex; align-items: center; gap: 0.3rem; color: var(--color-text-secondary); }
+.opacity-slider {
+  width: 45px; height: 4px; -webkit-appearance: none; appearance: none;
+  background: rgba(255, 255, 255, 0.1); border-radius: 4px; outline: none; cursor: pointer;
+}
+.opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--color-primary-light); cursor: pointer;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+/* Minimize button in header */
+.float-minimize-btn {
+  width: 22px; height: 22px; border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease;
+}
+.float-minimize-btn:hover { background: rgba(139, 92, 246, 0.2); color: var(--color-primary-light); border-color: rgba(139, 92, 246, 0.3); }
+.float-minimize-btn svg { width: 12px; height: 12px; }
+
+.float-time { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; font-weight: 800; color: var(--color-text); letter-spacing: 0.02em; line-height: 1; }
+.float-task { font-size: 0.72rem; color: var(--color-text-muted); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+
+.float-controls { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+.floating-minimized .float-controls { margin-top: 0; }
+.float-btn {
+  width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08); color: var(--color-text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+.float-btn:hover { background: rgba(139, 92, 246, 0.2); color: var(--color-primary-light); border-color: rgba(139, 92, 246, 0.3); }
+.float-btn svg { width: 14px; height: 14px; }
+.float-stop:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }

@@ -1,0 +1,31 @@
+.celebration-banner {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.confetti {
+  position: absolute; font-size: 1.5rem; animation: float 3s ease-in-out infinite;
+}
+.confetti:nth-child(1) { top: 10%; left: 10%; }
+.confetti:nth-child(2) { top: 20%; right: 15%; animation-delay: 0.5s; }
+.confetti:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 1s; }
+.confetti:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 1.5s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(10deg); }
+}
+
+.celeb-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--color-text);
+}
+
+.celeb-desc {
+  font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;
+}

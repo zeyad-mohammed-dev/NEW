@@ -1,0 +1,22 @@
+.dua-azkar-page { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 2rem; }
+
+.right-controls { display: flex; align-items: center; gap: 0.5rem; }
+
+.dua-grid { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.dua-title-wrap { flex: 1; min-width: 0; }
+.dua-item-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; color: var(--color-text); }
+.arabic-snippet { font-family: var(--font-family-arabic); font-size: 0.85rem; color: var(--color-text-secondary); direction: rtl; margin-top: 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Dua detail section */
+.dua-detail-section { display: flex; flex-direction: column; gap: 1rem; }
+.dua-detail-body {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+.dua-detail-body::-webkit-scrollbar { width: 4px; }
+.dua-detail-body::-webkit-scrollbar-track { background: transparent; }
+.dua-detail-body::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.2); border-radius: 999px; }
+.dua-detail-content { font-family: var(--font-family-arabic); font-size: 1.35rem; color: var(--color-text); direction: rtl; line-height: 2.2; }
+.dua-detail-meta { display: flex; align-items: center; gap: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }

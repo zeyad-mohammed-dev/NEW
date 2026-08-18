@@ -1,0 +1,56 @@
+@if (pomodoro.showFloating() && (pomodoro.phase() === 'focus' || pomodoro.phase() === 'break') && !pomodoro.isElectron()) {
+  <div class="floating-timer"
+    [class.floating-minimized]="pomodoro.floatingMinimized()"
+    [style.opacity]="(pomodoro.floatingOpacity() / 100).toString()"
+    style="right: 1.5rem; bottom: 1.5rem;">
+    <div class="float-drag-handle" (mousedown)="onDragStart($event)">
+      @if (pomodoro.floatingMinimized()) {
+        <!-- Minimized view: just time + task -->
+        <div class="float-minimized-content" (dblclick)="toggleMinimize()" title="Double-click to expand">
+          <div class="float-time-small">{{ pomodoro.displayMinutes() | number: '2.0' }}:{{ pomodoro.displaySeconds() | number: '2.0' }}</div>
+          @if (pomodoro.selectedTaskName()) {
+            <div class="float-task-small">{{ pomodoro.selectedTaskName() }}</div>
+          }
+        </div>
+      } @else {
+        <div class="float-header">
+          <span class="float-phase" [class.float-focus]="pomodoro.phase() === 'focus' && !pomodoro.isPaused()" [class.float-break]="pomodoro.phase() === 'break' && !pomodoro.isPaused()" [class.float-paused]="pomodoro.isPaused()">{{ pomodoro.phaseLabel() }}</span>
+          <div class="float-header-right">
+            <div class="float-opacity-ctrl" (mousedown)="$event.stopPropagation()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20V2z"/></svg>
+              <input type="range" min="20" max="100" [ngModel]="pomodoro.floatingOpacity()" (ngModelChange)="pomodoro.floatingOpacity.set($event)" class="opacity-slider" (mousedown)="$event.stopPropagation()" />
+            </div>
+            <button class="float-minimize-btn" (click)="$event.stopPropagation(); toggleMinimize()" title="Minimize">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="float-time">{{ pomodoro.displayMinutes() | number: '2.0' }}:{{ pomodoro.displaySeconds() | number: '2.0' }}</div>
+        @if (pomodoro.selectedTaskName()) {
+          <div class="float-task">{{ pomodoro.selectedTaskName() }}</div>
+        }
+      }
+    </div>
+    <div class="float-controls" (mousedown)="$event.stopPropagation()">
+      @if (pomodoro.floatingMinimized()) {
+        <!-- Minimized: expand + pause/resume -->
+        <button class="float-btn" (click)="toggleMinimize()" title="Expand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      } @else {
+        @if (pomodoro.isPaused()) {
+          <button class="float-btn" (click)="pomodoro.resume()" title="Resume">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+        } @else {
+          <button class="float-btn" (click)="pomodoro.pause()" title="Pause">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+        }
+      }
+      <button class="float-btn float-stop" (click)="pomodoro.end()" title="End">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+      </button>
+    </div>
+  </div>
+}

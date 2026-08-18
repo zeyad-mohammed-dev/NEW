@@ -1,0 +1,12 @@
+.day-detail-page { display: flex; flex-direction: column; gap: 1.25rem; padding-bottom: 2rem; }
+
+.back-link { font-size: 0.85rem; color: var(--color-primary-light); text-decoration: none; font-weight: 600; }
+.back-link:hover { color: var(--color-text); }
+
+.day-header { display: flex; align-items: center; justify-content: space-between; }
+.day-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--color-text); }
+
+.detail-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.detail-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(13, 10, 26, 0.5); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: var(--radius-md); }
+.detail-item.completed .detail-name { text-decoration: line-through; color: var(--color-text-secondary); }
+.detail-name { font-size: 0.9rem; font-weight: 600; color: var(--color-text); flex: 1; }

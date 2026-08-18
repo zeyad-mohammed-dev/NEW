@@ -1,0 +1,25 @@
+<div class="cd-wrap" (click)="$event.stopPropagation()">
+  @if (label) {
+    <label class="cd-label">{{ label }}</label>
+  }
+  <div class="cd-trigger input" (click)="toggle()">
+    <span class="cd-value" [class.placeholder]="!displayValue">{{ displayValue || placeholder }}</span>
+    <svg class="cd-chevron" [class.open]="isOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+  @if (isOpen) {
+    <div class="cd-popup">
+      <div class="cd-options-list">
+        @for (opt of options; track opt.value) {
+          <button type="button" class="cd-option" [class.active]="selectedOption?.value === opt.value" (click)="selectOption(opt)">
+            <span class="cd-option-label">{{ opt.label }}</span>
+            @if (selectedOption?.value === opt.value) {
+              <svg class="cd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>
+            }
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

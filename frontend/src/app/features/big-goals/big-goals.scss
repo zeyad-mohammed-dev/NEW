@@ -1,0 +1,117 @@
+.big-goals-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tabs-group {
+  display: flex;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  padding: 0.25rem;
+}
+
+.tab-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tab-btn.active {
+  color: var(--color-text);
+  background: var(--color-primary);
+  box-shadow: 0 2px 8px var(--color-primary-glow);
+}
+
+.big-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.goal-card-item {
+  padding: 1.15rem 1.25rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.goal-card-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--gradient-accent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.goal-card-item:hover::before {
+  opacity: 1;
+}
+
+.goal-card-item:hover {
+  transform: translateX(4px);
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.goal-card-item.completed {
+  opacity: 0.6;
+}
+
+.goal-card-item.completed .goal-title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.goal-item-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.goal-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.goal-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.goal-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

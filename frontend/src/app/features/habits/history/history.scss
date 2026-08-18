@@ -1,0 +1,15 @@
+.history-page { display: flex; flex-direction: column; gap: 1.25rem; padding-bottom: 2rem; }
+
+.page-top-bar { display: flex; align-items: center; justify-content: space-between; }
+.tabs-group { display: flex; background: rgba(13, 10, 26, 0.7); padding: 0.25rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+.tab-btn { padding: 0.4rem 1.1rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); text-decoration: none; transition: all 0.2s ease; }
+.tab-btn:hover { color: var(--color-text); }
+.tab-btn.active { background: rgba(139, 92, 246, 0.25); color: var(--color-text); border: 1px solid rgba(139, 92, 246, 0.4); }
+
+.history-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.history-item { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: inherit; }
+.history-left { display: flex; align-items: center; gap: 1rem; }
+.star-display { font-size: 1.5rem; }
+.history-date { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--color-text); }
+.history-stats { font-size: 0.8rem; color: var(--color-text-secondary); display: block; margin-top: 0.1rem; }
