@@ -19,6 +19,38 @@
     <app-confirm-dialog title="Delete Big Goal" [message]="deleteMessage" confirmLabel="Delete" [danger]="true" (confirm)="doDelete()" (cancel)="cancelDelete()" />
   }
 
+  @if (showDetailModal) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ detailEntry?.title }}</h3>
+        <span class="badge" [class.badge-success]="detailEntry?.status === 'completed'" [class.badge-primary]="detailEntry?.status === 'active'">
+          {{ detailEntry?.status === 'completed' ? 'Completed' : 'Active' }}
+        </span>
+        <button type="button" class="btn-icon" (click)="closeDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="goal-detail-body">
+        @if (detailEntry?.description) {
+          <p class="goal-detail-content">{{ detailEntry?.description }}</p>
+        } @else {
+          <p style="color:var(--color-text-secondary)">No description for this goal.</p>
+        }
+        @if (detailEntry?.targetDate) {
+          <div class="goal-detail-meta">
+            <span class="badge badge-primary">Target: {{ formatDate(detailEntry!.targetDate!) }}</span>
+            <span style="color:var(--color-text-secondary); font-size:0.8rem;">Created: {{ formatDate(detailEntry!.createdAt) }}</span>
+          </div>
+        }
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
   <!-- Create / Edit Modal -->
   @if (showForm) {
     <div class="modal-overlay" (click)="cancelForm()">
@@ -60,8 +92,7 @@
   } @else {
     <div class="big-goals-list">
       @for (goal of goals; track goal._id) {
-        <div class="card goal-card-item" [class.completed]="goal.status === 'completed'">
-          <div class="goal-item-header">
+<div class="card goal-card-item" [class.completed]="goal.status === 'completed'" (click)="openDetail(goal)">          <div class="goal-item-header">
             <div class="icon-circle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>

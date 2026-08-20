@@ -4,6 +4,29 @@
     <app-confirm-dialog title="Delete Rule" [message]="deleteMessage" confirmLabel="Delete" [danger]="true" (confirm)="doDelete()" (cancel)="cancelDelete()" />
   }
 
+  @if (showDetailModal) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ detailEntry?.title }}</h3>
+        <button type="button" class="btn-icon" (click)="closeDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="rule-detail-body">
+        @if (detailEntry?.content) {
+          <p class="rule-detail-content">{{ detailEntry?.content }}</p>
+        } @else {
+          <p style="color:var(--color-text-secondary)">No content for this rule.</p>
+        }
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
   <!-- Top Action Bar -->
   <div class="page-top-bar">
     <div class="search-box">
@@ -44,8 +67,7 @@
   } @else {
     <div class="rules-grid">
       @for (rule of rules; track rule._id) {
-        <div class="card rule-card-item" [class.selected]="selected?._id === rule._id" (click)="select(rule)">
-          <div class="rule-item-header">
+<div class="card rule-card-item" [class.selected]="selected?._id === rule._id" (click)="select(rule); openDetail(rule)">          <div class="rule-item-header">
             <div class="icon-circle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
             </div>

@@ -39,6 +39,9 @@ export class BigGoals implements OnInit {
   deleteTarget: BigGoal | null = null;
   deleteMessage = '';
 
+  showDetailModal = false;
+detailEntry: BigGoal | null = null;
+
   ngOnInit() { this.load(); }
 
   load() {
@@ -51,6 +54,9 @@ export class BigGoals implements OnInit {
   }
 
   filterByStatus(s: string) { this.statusFilter = s; this.load(); }
+
+  openDetail(g: BigGoal) { this.detailEntry = g; this.showDetailModal = true; }
+closeDetail() { this.showDetailModal = false; this.detailEntry = null; }
 
   openCreate() {
     this.editing = false;

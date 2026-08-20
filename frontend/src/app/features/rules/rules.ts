@@ -35,6 +35,9 @@ export class Rules implements OnInit {
   showDeleteConfirm = false;
   deleteMessage = '';
 
+  showDetailModal = false;
+detailEntry: Rule | null = null;
+
   ngOnInit() {
     this.searchSubject.pipe(
       debounceTime(300),
@@ -54,6 +57,9 @@ export class Rules implements OnInit {
 
   search(q: string) { this.searchSubject.next(q); }
   select(r: Rule) { this.selected = this.selected?._id === r._id ? null : r; }
+
+  openDetail(r: Rule) { this.detailEntry = r; this.showDetailModal = true; }
+closeDetail() { this.showDetailModal = false; this.detailEntry = null; }
 
   openCreate() { this.editing = false; this.form.reset(); this.showForm = true; }
   openEdit(r: Rule) { this.editing = true; this.selected = r; this.form.patchValue({ title: r.title, content: r.content }); this.showForm = true; }
